@@ -1,33 +1,54 @@
 import React from 'react';
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import { Provider as PaperProvider, configureFonts, DefaultTheme } from 'react-native-paper';
 import AppNavigator from './navigation/AppNavigator';
 import { AuthProvider } from './navigation/AuthContext';
 
-const theme = {
-  ...DefaultTheme,
-  roundness: 8,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#0A6ED1',    // professional deep blue
-    accent: '#00BFA6',     // subtle teal accent
-    background: '#F3F6FA', // very light background
-    surface: '#FFFFFF',    // white cards / surfaces
-    text: '#1F2D3D',       // dark text for contrast
-    placeholder: '#90A4AE',
-    primary_variant: '#0957A1',
-  },
-  fonts: {
-    ...DefaultTheme.fonts,
+// Define font configurations based on the design system
+const fontConfig = {
+  default: {
     regular: {
-      fontFamily: DefaultTheme.fonts.regular?.fontFamily || 'System',
+      fontFamily: 'sans-serif',
       fontWeight: '400',
     },
     medium: {
-      fontFamily: DefaultTheme.fonts.medium?.fontFamily || 'System',
-      fontWeight: '500',
+      fontFamily: 'sans-serif-medium',
+      fontWeight: '600',
+    },
+    light: {
+      fontFamily: 'sans-serif-light',
+      fontWeight: '300',
+    },
+    thin: {
+      fontFamily: 'sans-serif-thin',
+      fontWeight: '100',
     },
   },
 };
+
+// Create the new theme based on the provided JSON design system
+const theme = {
+  ...DefaultTheme,
+  roundness: 8, // from layout.border_radius
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#2563EB',
+    accent: '#6366F1',
+    background: '#F9FAFB',
+    surface: '#FFFFFF',
+    text: '#111827',
+    secondary: '#6B7280', // for secondary text
+    placeholder: '#9CA3AF',
+    backdrop: 'rgba(0,0,0,0.5)',
+    onSurface: '#111827',
+    error: '#DC2626',
+    // Custom colors
+    success: '#16A34A',
+    warning: '#F59E0B',
+    border: '#E5E7EB',
+  },
+  fonts: configureFonts(fontConfig),
+};
+
 
 export default function App() {
   return (

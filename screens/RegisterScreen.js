@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, Animated, useWindowDimensions } from 'react-native';
-import { TextInput, Button, Text, useTheme, Card, Title, Avatar } from 'react-native-paper';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Animated, Text } from 'react-native';
+import { TextInput, Button, useTheme, Card, Title, Paragraph } from 'react-native-paper';
 import { useAuth } from '../navigation/AuthContext';
 
 export default function RegisterScreen({ navigation }) {
@@ -8,15 +8,13 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { register } = useAuth();
-  const { colors } = useTheme();
+  const { colors, roundness } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const { width } = useWindowDimensions();
-  const containerWidth = Math.min(480, width * 0.95); // responsive max width
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 600,
+      duration: 400,
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
@@ -25,7 +23,6 @@ export default function RegisterScreen({ navigation }) {
     if (name && email && password) {
       register(name, email, password);
     } else {
-      // Replace with inline helper UI if desired
       alert('Please fill all fields.');
     }
   };
@@ -35,31 +32,24 @@ export default function RegisterScreen({ navigation }) {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={[styles.outer, { backgroundColor: colors.background }]}>
-        <Animated.View style={[styles.center, { opacity: fadeAnim, width: containerWidth }]}>
-          <View style={styles.brandRow}>
-            <Avatar.Icon size={56} icon="leaf" style={{ backgroundColor: 'transparent' }} color={colors.primary} />
-            <View style={{ marginLeft: 12 }}>
-              <Text style={[styles.appName, { color: colors.text }]}>AgriDetectAI</Text>
-              <Text style={[styles.appSubtitle, { color: colors.placeholder }]}>Create your account</Text>
-            </View>
-          </View>
-
-          <Card style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Animated.View style={[styles.contentContainer, { opacity: fadeAnim }]}>
+          <Title style={[styles.logo, { color: colors.text }]}>AgriDetectAI</Title>
+          <Paragraph style={[styles.subtitle, { color: colors.secondary }]}>
+            Create Your Account
+          </Paragraph>
+          <Card style={[styles.card, { backgroundColor: colors.surface, borderRadius: 12 }]}>
             <Card.Content>
-              <Title style={[styles.title, { color: colors.text }]}>Create an Account</Title>
-
               <TextInput
                 label="Name"
                 value={name}
                 onChangeText={setName}
                 style={styles.input}
                 mode="outlined"
-                outlineColor={colors.placeholder}
+                theme={{ roundness: roundness }}
+                outlineColor={colors.border}
                 activeOutlineColor={colors.primary}
-                autoCapitalize="words"
               />
-
               <TextInput
                 label="Email"
                 value={email}
@@ -68,10 +58,10 @@ export default function RegisterScreen({ navigation }) {
                 mode="outlined"
                 autoCapitalize="none"
                 keyboardType="email-address"
-                outlineColor={colors.placeholder}
+                theme={{ roundness: roundness }}
+                outlineColor={colors.border}
                 activeOutlineColor={colors.primary}
               />
-
               <TextInput
                 label="Password"
                 value={password}
@@ -79,24 +69,22 @@ export default function RegisterScreen({ navigation }) {
                 style={styles.input}
                 secureTextEntry
                 mode="outlined"
-                outlineColor={colors.placeholder}
+                theme={{ roundness: roundness }}
+                outlineColor={colors.border}
                 activeOutlineColor={colors.primary}
               />
-
               <Button
                 mode="contained"
                 onPress={handleRegister}
-                style={[styles.button, { backgroundColor: colors.primary }]}
-                labelStyle={{ fontWeight: '700' }}
-                contentStyle={{ height: 48 }}
+                style={[styles.button, { backgroundColor: colors.primary }]}n                contentStyle={styles.buttonContent}
+                labelStyle={{ color: '#FFFFFF', fontWeight: 'bold' }}
               >
-                Register
+                Create Account
               </Button>
-
               <Button
                 onPress={() => navigation.navigate('Login')}
-                style={styles.linkButton}
-                textColor={colors.primary}
+                style={[styles.button, styles.secondaryButton, { borderColor: colors.primary }]}>
+                labelStyle={{ color: colors.primary }}
               >
                 Already have an account?
               </Button>
@@ -109,49 +97,47 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  outer: {
+  container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 24,
   },
-  center: {
-    alignSelf: 'center',
+  contentContainer: {
+    padding: 24, // from layout.padding
   },
-  brandRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 14,
-  },
-  appName: {
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  appSubtitle: {
-    fontSize: 13,
-    marginTop: 2,
-  },
-  card: {
-    borderRadius: 12,
-    elevation: 6,
-    paddingVertical: 6,
-  },
-  title: {
-    fontSize: 18,
+  logo: {
+    fontSize: 32, // h1
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16, // body
+    textAlign: 'center',
+    marginBottom: 32, // section_spacing
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB', // border_color
+    shadowColor: 'rgba(0,0,0,0.08)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   input: {
-    marginBottom: 12,
-    backgroundColor: 'transparent',
+    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
   },
   button: {
     marginTop: 8,
-    borderRadius: 8,
+    borderRadius: 8, // from layout.border_radius
   },
-  linkButton: {
-    marginTop: 8,
-    alignSelf: 'center',
+  buttonContent: {
+    height: 44, // from inputs.height
+    justifyContent: 'center',
+  },
+  secondaryButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
   },
 });

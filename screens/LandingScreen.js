@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, ScrollView } from 'react-native';
-import { Text, useTheme, Card, Title, Paragraph, Avatar } from 'react-native-paper';
+import { Text, useTheme, Card, Title, Paragraph } from 'react-native-paper';
 import { useAuth } from '../navigation/AuthContext';
 
 const AnimatedCard = Animated.createAnimatedComponent(Card);
 
-const InfoCard = ({ title, content, delay = 0, style, titleColor }) => {
+const InfoCard = ({ title, content, delay, style, titleColor, contentColor }) => {
   const { colors } = useTheme();
   const slideAnim = useRef(new Animated.Value(20)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -14,33 +14,30 @@ const InfoCard = ({ title, content, delay = 0, style, titleColor }) => {
     Animated.parallel([
       Animated.timing(opacityAnim, {
         toValue: 1,
-        duration: 450,
+        duration: 300, // Faster animation
         delay,
         useNativeDriver: true,
       }),
-      Animated.spring(slideAnim, {
+      Animated.timing(slideAnim, {
         toValue: 0,
+        duration: 200, // Faster animation
         delay,
-        friction: 7,
         useNativeDriver: true,
       }),
     ]).start();
   }, []);
 
   return (
-    <AnimatedCard style={[styles.card, style, { opacity: opacityAnim, transform: [{ translateY: slideAnim }] }]}>
+    <AnimatedCard style={[styles.card, style, { borderColor: colors.border, opacity: opacityAnim, transform: [{ translateY: slideAnim }] }]}>
       <Card.Content>
-        <View style={styles.cardHeader}>
-          <Avatar.Icon size={40} icon="leaf" style={{ backgroundColor: 'transparent' }} color={colors.primary} />
-          <Title style={[styles.cardTitle, titleColor ? { color: titleColor } : { color: colors.text }]}>{title}</Title>
-        </View>
-        <Paragraph style={{ color: titleColor ? 'white' : colors.placeholder }}>{content}</Paragraph>
+        <Title style={[styles.cardTitle, { color: titleColor || colors.text }]}>{title}</Title>
+        <Paragraph style={{ color: contentColor || colors.secondary, lineHeight: 22 }}>{content}</Paragraph>
       </Card.Content>
     </AnimatedCard>
   );
 };
 
-export default function LandingScreen() {
+export default function LandingScreen({ navigation }) {
   const { colors } = useTheme();
   const { user } = useAuth();
 
@@ -48,27 +45,30 @@ export default function LandingScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.text }]}>Dashboard</Text>
-        <Paragraph style={[styles.subtitle, { color: colors.placeholder }]}>Welcome, {user?.email || 'User'}</Paragraph>
+        <Paragraph style={[styles.subtitle, { color: colors.secondary }]}>
+          Welcome, {user?.email || 'User'}
+        </Paragraph>
       </View>
 
       <InfoCard
         title="Get Started"
-        content="Navigate to the 'Detect' tab to upload an image and get an instant analysis of your crops."
+        content="Ready to check your crops? Navigate to the 'Detect' tab to upload an image and get an instant analysis."
         delay={100}
-        style={{ backgroundColor: colors.primary, marginTop: 8 }}
-        titleColor="white"
+        style={{ backgroundColor: colors.primary }}
+        titleColor="#FFFFFF"
+        contentColor="#E0E0E0"
       />
 
       <InfoCard
         title="How It Works"
-        content="Our AI model analyzes plant leaf images to detect common diseases quickly and accurately."
-        delay={250}
+        content="Our advanced AI model analyzes the leaves of your plants to detect common diseases with high accuracy."
+        delay={200}
       />
       
       <InfoCard
         title="Supported Plants"
-        content="Optimized for several crops including Wheat and Pumpkin; we keep adding more plants."
-        delay={400}
+        content="This version is optimized for analyzing various diseases affecting Wheat and Pumpkin plants."
+        delay={300}
       />
     </ScrollView>
   );
@@ -79,34 +79,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 8,
+    padding: 24, // from layout.padding
+    paddingBottom: 12,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: 32, // h1
+    fontWeight: '600',
+    lineHeight: 38,
   },
   subtitle: {
-    fontSize: 15,
-    marginTop: 6,
+    fontSize: 16, // body
+    marginTop: 4,
   },
   card: {
-    marginHorizontal: 15,
-    marginVertical: 10,
-    borderRadius: 12,
-    elevation: 3,
-    paddingVertical: 2,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 8,
+    marginHorizontal: 24, // from layout.padding
+    marginVertical: 8,
+    borderRadius: 12, // from cards.border_radius
+    borderWidth: 1,
+    elevation: 0, // Use border instead of shadow for minimal look
+    shadowColor: 'transparent',
   },
   cardTitle: {
-    marginLeft: 12,
-    fontSize: 18,
+    fontSize: 20, // h3
     fontWeight: '600',
+    marginBottom: 8,
   },
 });
