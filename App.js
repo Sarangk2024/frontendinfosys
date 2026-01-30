@@ -8,31 +8,23 @@ const theme = {
   roundness: 8,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#3498db',    // A professional blue
-    accent: '#5dade2',
-    background: '#f4f6f7', // Light grey background
-    surface: '#ffffff',     // Cards will be white
-    text: '#2c3e50',
-    placeholder: '#7f8c8d',
-    primary_variant: '#2980b9',
+    primary: '#0A6ED1',    // professional deep blue
+    accent: '#00BFA6',     // subtle teal accent
+    background: '#F3F6FA', // very light background
+    surface: '#FFFFFF',    // white cards / surfaces
+    text: '#1F2D3D',       // dark text for contrast
+    placeholder: '#90A4AE',
+    primary_variant: '#0957A1',
   },
   fonts: {
     ...DefaultTheme.fonts,
     regular: {
-      fontFamily: 'sans-serif',
-      fontWeight: 'normal',
+      fontFamily: DefaultTheme.fonts.regular?.fontFamily || 'System',
+      fontWeight: '400',
     },
     medium: {
-      fontFamily: 'sans-serif-medium',
-      fontWeight: 'normal',
-    },
-    light: {
-      fontFamily: 'sans-serif-light',
-      fontWeight: 'normal',
-    },
-    thin: {
-      fontFamily: 'sans-serif-thin',
-      fontWeight: 'normal',
+      fontFamily: DefaultTheme.fonts.medium?.fontFamily || 'System',
+      fontWeight: '500',
     },
   },
 };

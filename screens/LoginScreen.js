@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, Animated } from 'react-native';
-import { TextInput, Button, Text, useTheme, Card } from 'react-native-paper';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Animated, useWindowDimensions } from 'react-native';
+import { TextInput, Button, Text, useTheme, Card, Title, Avatar } from 'react-native-paper';
 import { useAuth } from '../navigation/AuthContext';
 
 export default function LoginScreen({ navigation }) {
@@ -9,11 +9,13 @@ export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
   const { colors } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { width } = useWindowDimensions();
+  const containerWidth = Math.min(480, width * 0.95); // responsive max width
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 800,
+      duration: 600,
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
@@ -22,6 +24,7 @@ export default function LoginScreen({ navigation }) {
     if (email && password) {
       login(email, password);
     } else {
+      // replace with nicer inline helper UI if you want
       alert('Please enter email and password.');
     }
   };
@@ -31,12 +34,20 @@ export default function LoginScreen({ navigation }) {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Animated.View style={{ opacity: fadeAnim }}>
-          <Text style={styles.logo}>AgriDetectAI</Text>
-          <Card style={styles.card}>
+      <View style={[styles.outer, { backgroundColor: colors.background }]}>
+        <Animated.View style={[styles.center, { opacity: fadeAnim, width: containerWidth }]}>
+          <View style={styles.brandRow}>
+            <Avatar.Icon size={56} icon="leaf" style={{ backgroundColor: 'transparent' }} color={colors.primary} />
+            <View style={{ marginLeft: 12 }}>
+              <Text style={[styles.appName, { color: colors.text }]}>AgriDetectAI</Text>
+              <Text style={[styles.appSubtitle, { color: colors.placeholder }]}>Smart plant disease detection</Text>
+            </View>
+          </View>
+
+          <Card style={[styles.card, { backgroundColor: colors.surface }]}>
             <Card.Content>
-              <Text style={styles.title}>Welcome Back</Text>
+              <Title style={[styles.title, { color: colors.text }]}>Welcome Back</Title>
+
               <TextInput
                 label="Email"
                 value={email}
@@ -45,7 +56,11 @@ export default function LoginScreen({ navigation }) {
                 mode="outlined"
                 autoCapitalize="none"
                 keyboardType="email-address"
+                outlineColor={colors.placeholder}
+                activeOutlineColor={colors.primary}
+                placeholderTextColor={colors.placeholder}
               />
+
               <TextInput
                 label="Password"
                 value={password}
@@ -53,19 +68,24 @@ export default function LoginScreen({ navigation }) {
                 style={styles.input}
                 secureTextEntry
                 mode="outlined"
+                outlineColor={colors.placeholder}
+                activeOutlineColor={colors.primary}
               />
+
               <Button
                 mode="contained"
                 onPress={handleLogin}
-                style={styles.button}
-                labelStyle={{ fontWeight: 'bold' }}
+                style={[styles.button, { backgroundColor: colors.primary }]}
+                labelStyle={{ fontWeight: '700' }}
+                contentStyle={{ height: 48 }} // consistent touch target
               >
                 Login
               </Button>
+
               <Button
                 onPress={() => navigation.navigate('Register')}
-                style={styles.button}
-                color={colors.primary}
+                style={styles.linkButton}
+                textColor={colors.primary}
               >
                 Create an account
               </Button>
@@ -78,36 +98,49 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  outer: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    paddingVertical: 24,
   },
-  logo: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    color: '#2c3e50',
-    letterSpacing: 1,
+  center: {
+    alignSelf: 'center',
+  },
+  brandRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 14,
+  },
+  appName: {
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  appSubtitle: {
+    fontSize: 13,
+    marginTop: 2,
   },
   card: {
     borderRadius: 12,
-    elevation: 4,
+    elevation: 6,
+    paddingVertical: 6,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 20,
-    color: '#2c3e50',
+    marginBottom: 12,
   },
   input: {
-    marginBottom: 16,
+    marginBottom: 12,
+    backgroundColor: 'transparent', // keeps card surface visible
   },
   button: {
-    marginTop: 10,
-    paddingVertical: 4,
+    marginTop: 8,
     borderRadius: 8,
+  },
+  linkButton: {
+    marginTop: 8,
+    alignSelf: 'center',
   },
 });
